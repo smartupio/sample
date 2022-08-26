@@ -44,8 +44,8 @@ jobs:
             mkdir target/artifacts
             cp $(find target -name "*.jar") target/artifacts
 
-#      - store_artifacts:
-#          path: target/artifacts/
+      #      - store_artifacts:
+      #          path: target/artifacts/
 
       - save_cache:
           paths:
@@ -106,7 +106,7 @@ jobs:
           name: Setup common environment variables
           command: |
             echo 'export ECR_REPOSITORY_NAME="${AWS_RESOURCE_NAME_PREFIX}"' >> $BASH_ENV
-            echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest"' >> $BASH_ENV
+            echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest"' >> $BASH_ENV
       - run:
           name: Install dependencies for AWS
           command: |
@@ -143,18 +143,15 @@ workflows:
   version: 2
   pull_request_workflow:
     jobs:
-      - checkout_code:
-          filters:
-            branches:
-              ignore: /(develop|master )/
+      - checkout_code
       - build:
           context: development
           requires:
             - checkout_code
-#      - test:
-#          context: development
-#          requires:
-#            - build
+      #      - test:
+      #          context: development
+      #          requires:
+      #            - build
       - deploy:
           context: development
           requires:
@@ -163,14 +160,14 @@ workflows:
           context: development
           requires:
             - deploy
-  development_workflow:
-    jobs:
-      - checkout_code:
-          filters:
-            branches:
-              only:
-                - /develop$/
-      - build:
-          context: development
-          requires:
-            - checkout_code
+#  development_workflow:
+#    jobs:
+#      - checkout_code:
+#          filters:
+#            branches:
+#              only:
+#                - /develop$/
+#      - build:
+#          context: development
+#          requires:
+#            - checkout_code
